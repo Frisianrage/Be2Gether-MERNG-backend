@@ -105,7 +105,7 @@ module.exports = gql`
             getUserByEmail(email: String!): User!
             getChat(chatId: ID!): Chat!
             getMessages: [Message]!
-            getMap: User
+            getMap(mapId: ID!): Map!
             getPlace(id: ID!): Place
             getPlaceImages(id: ID!): [Image]
             connectionCheck: User
@@ -120,7 +120,7 @@ module.exports = gql`
             requestConnection(partnerId: ID!): Connection
             acceptRequestConnection(connectionId: ID!): Connection
             deleteConnection(connectionId: ID!): Connection
-            createPlace(lat: String! long: String!): Place
+            createPlace(lat: String! long: String! mapId: ID!): Place
             deletePlace(placeId: ID!): Map
             addPlaceImg(placeImageInput: PlaceImageInput!): Place
             deletePlaceImg(imgId: ID! placeId: ID!): Place

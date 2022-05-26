@@ -8,11 +8,10 @@ const {UserInputError} = require('apollo-server')
 
 module.exports = {
     Query: {
-        async getMap(_,__, {token}){
+        async getMap(_,{mapId}){
             
             try {
-                const {id} = auth(token)
-                const map = await User.findOne({_id: id}).populate('map').populate( { path: 'map', populate: 'places' })
+                const map = await Map.findById(mapId).populate('places')
 
                 return map
             } catch (error) {
@@ -41,23 +40,20 @@ module.exports = {
         }
     },
     Mutation: {
-        async createPlace(_, {lat, long}, {pubsub, token}){
+        async createPlace(_, {lat, long, mapId}, {pubsub}){
 
             try {
-                const {id} = auth(token)
-                const {map} = await User.findOne({_id: id}).populate('map')
-                
                 const newPlace = new Place({
-                    map: map.id,
+                    mapId,
                     lat,
                     long
                 })
                 
                 //saves the single place in the db and returns place and the user 
                 const res = await newPlace.save()
-                
+                console.log(res)
                 //inserts the new place to the place array inside the map
-                const updatedMap = await Map.findOneAndUpdate({_id: map.id},{$push: {places: res._id}})
+                await Map.findOneAndUpdate({_id: mapId},{$push: {places: res._id}})
 
                 pubsub.publish('NEW_PLACE', {newPlace})
 
