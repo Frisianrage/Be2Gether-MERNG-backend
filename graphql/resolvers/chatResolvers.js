@@ -18,14 +18,14 @@ module.exports = {
         }
     },
     Mutation: {
-        async createMessage(_, {content, messagetype}, {pubsub, token}){
+        async createMessage(_, {content, messagetype, chatId}, {pubsub, token}){
 
             try {
                 const {id} = auth(token)
-                const user = await User.findOne({_id: id}).populate('chat')
 
                 const newMessage = new Message({
-                    user: user.id,
+                    user: id,
+                    chatId,
                     content,
                     messagetype
                 })
@@ -33,7 +33,7 @@ module.exports = {
                 //saves the single message in the db and returns message and the user 
                 const res = await newMessage.save().then(message => message.populate('user').execPopulate())
                 //isnerts the new message to the message array inside the chat
-                await Chat.findOneAndUpdate({_id: user.chat.id},{$push: {messages: res._id}})
+                await Chat.findOneAndUpdate({_id: chatId},{$push: {messages: res._id}})
 
                 pubsub.publish('NEW_MESSAGE', {newMessage})
 

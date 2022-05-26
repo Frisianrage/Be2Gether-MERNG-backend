@@ -116,7 +116,7 @@ module.exports = gql`
             updateUser(updateInput: UserUpdateInput): User!
             updateAvatar(avatarInput: ImageInput!, email: String!): User!
             updatePlace(placeInput: PlaceUpdateInput!): Place!
-            createMessage(content:String! messagetype: String!): Message
+            createMessage(content:String! messagetype: String! chatId: ID!): Message
             requestConnection(partnerId: ID!): Connection
             acceptRequestConnection(connectionId: ID!): Connection
             deleteConnection(connectionId: ID!): Connection
