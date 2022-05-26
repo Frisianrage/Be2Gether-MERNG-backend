@@ -1,15 +1,10 @@
 const mongoose = require('mongoose')
 
 const chatSchema = mongoose.Schema({
-    user: {
+    connection: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: 'User'
-    },
-    partner: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: 'User'
+        ref: 'Connection'
     },
     messages: [{
         type: mongoose.Schema.Types.ObjectId,

@@ -41,31 +41,6 @@ module.exports = {
         }
     },
     Mutation: {
-        async createMap(_, {partnerId}, {token}){
-
-            try {
-                const {id} = auth(token)
-                const newMap = new Map({
-                    user: id,
-                    partner: partnerId,
-                    places: []
-                })
-                const res = await newMap.save()
-
-                //adding the Chat-ID to the User profile
-                await User.findOneAndUpdate({_id: id}, {map: res._id}).populate('map')
-                //adding the Chat_ID to the partner's profile
-                await User.findOneAndUpdate({_id: partnerId}, {map: res._id}).populate('map')
-                //find and return the chat
-                const map = await Map.findOne({_id: res._id})
-                .populate('user')
-                .populate('partner')
-
-                return map
-            } catch (error) {
-                throw new Error(error)
-            }
-        },
         async createPlace(_, {lat, long}, {pubsub, token}){
 
             try {

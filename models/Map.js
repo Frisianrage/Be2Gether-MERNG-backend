@@ -1,22 +1,17 @@
 const mongoose = require('mongoose')
 
 const mapSchema = mongoose.Schema({
-    user: {
+    connection: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: 'User'
-    },
-    partner: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: 'User'
+        ref: 'Connection'
     },
     places: [{
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: 'Place',
         default: []
-    },]
+    }]
 }, {
     timestamps: true
 })

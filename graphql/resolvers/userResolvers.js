@@ -10,6 +10,7 @@ const generateToken = (user) => {
         id: user._id,
         email: user.email,
         isAdmin: user.isAdmin,
+        connections: user.connections
     }
     return jwt.sign(loggedUser, process.env.SECRET_KEY, {expiresIn: '12h'}) 
 }
@@ -20,8 +21,8 @@ module.exports = {
 
             try {
                 const {id} = auth(token)
-                const user = await User.findOne({_id: id}).populate('partner').populate({ path: 'partner', populate: 'user' })
-               
+                const user = await User.findOne({_id: id}).populate('connections').populate( { path: 'connections', populate: 'persons' })
+               console.log(user)
                 return user
             } catch (error) {
                 throw new Error(error)
@@ -53,16 +54,6 @@ module.exports = {
             } catch (error) {
                 throw new Error(error)
             }
-        },
-        async mapChatCheck(_, __, {token}) {
-
-            try {
-                const {id} = auth(token)
-                const user = await User.findOne({_id: id}, 'id').populate('map', 'id').populate('chat', 'id')
-                return user
-            } catch (error) {
-                throw new Error(error)
-            }
         }
     },
     Mutation: {
@@ -75,8 +66,8 @@ module.exports = {
                     throw new UserInputError('Errors', {errors})
                 }
 
-                const user = await User.findOne({email}).populate('chat').populate('map')
-
+                const user = await User.findOne({email}).populate('connections').populate( { path: 'connections', populate: 'persons' })
+                
                 if(!user){
                     errors.general = 'User not found'
                     throw new UserInputError('User not found', {errors})
@@ -212,42 +203,6 @@ module.exports = {
                     ...res._doc,
                     id: res._id,
                 } 
-            } catch (error) {
-                throw new Error(error)
-            }
-        },
-        async requestConnection(_,{partnerId}, {token}){
-
-            try {
-                const {id} = auth(token)
-                await User.findOneAndUpdate({_id: partnerId}, {partner: {user: id, status: "pending"} })
-                const res = await User.findOneAndUpdate({_id: id}, {partner: {user: partnerId, status: "pending"} }).populate('partner').populate({ path: 'partner', populate: 'user' })
-                
-                return res
-            } catch (error) {
-                throw new Error(error)
-            }
-        },
-        async acceptRequestConnection(_,{partnerId}, {token}){
-
-            try {
-                const {id} = auth(token)
-                await User.findOneAndUpdate({_id: partnerId}, {partner: {user: id, status: "accepted"} })
-                const res = await User.findOneAndUpdate({_id: id}, {partner: {user: partnerId, status: "accepted"} }).populate('partner').populate({ path: 'partner', populate: 'user' })
-                 
-                return res
-            } catch (error) {
-                throw new Error(error)
-            }
-        },
-        async deleteConnection(_,{partnerId}, {token}){
-            
-            try {
-                const {id} = auth(token)
-                await User.findOneAndUpdate({_id: partnerId}, {partner: {user: null, status: ""}, chat: null, map: null })
-                const res = await User.findOneAndUpdate({_id: id}, {partner: {user: null, status: ""}, chat: null, map: null }).populate('partner').populate({ path: 'partner', populate: 'user' })
-                 
-                return res
             } catch (error) {
                 throw new Error(error)
             }

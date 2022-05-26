@@ -10,13 +10,16 @@ module.exports = gql`
             isAdmin: Boolean!
             token: String!
             avatar: Image!
-            partner: Partner
+            connections: [Connection]
+        },
+        type Connection{
+            id: ID!
+            connectionType: String
+            persons: [User]
+            status: String
+            requester: String
             chat: Chat
             map: Map
-        },
-        type Partner{
-            user: User
-            status: String
         },
         type Image{
             id: ID
@@ -27,8 +30,7 @@ module.exports = gql`
         },
         type Chat{
             id: ID!
-            user: User!
-            partner: User!
+            connection: Connection!
             messages: [Message]
         },
         type Message{
@@ -40,8 +42,7 @@ module.exports = gql`
         },
         type Map{
             id: ID!
-            user: User!
-            partner: User!
+            connection: Connection!
             places: [Place]
         },
         type Place{
@@ -102,12 +103,12 @@ module.exports = gql`
             getUserDetails: User!
             getUserById: User!
             getUserByEmail(email: String!): User!
-            getChat: User!
+            getChat(chatId: ID!): Chat!
             getMessages: [Message]!
             getMap: User
             getPlace(id: ID!): Place
             getPlaceImages(id: ID!): [Image]
-            mapChatCheck: User
+            connectionCheck: User
         },
         type Mutation{
             register(registerInput: RegisterInput): User!
@@ -115,12 +116,10 @@ module.exports = gql`
             updateUser(updateInput: UserUpdateInput): User!
             updateAvatar(avatarInput: ImageInput!, email: String!): User!
             updatePlace(placeInput: PlaceUpdateInput!): Place!
-            createChat(partnerId: ID!): Chat
             createMessage(content:String! messagetype: String!): Message
-            requestConnection(partnerId: ID!): User
-            acceptRequestConnection(partnerId: ID!): User
-            deleteConnection(partnerId: ID!): User
-            createMap(partnerId: ID!): Map
+            requestConnection(partnerId: ID!): Connection
+            acceptRequestConnection(connectionId: ID!): Connection
+            deleteConnection(connectionId: ID!): Connection
             createPlace(lat: String! long: String!): Place
             deletePlace(placeId: ID!): Map
             addPlaceImg(placeImageInput: PlaceImageInput!): Place

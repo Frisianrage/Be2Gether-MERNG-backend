@@ -5,11 +5,11 @@ const auth = require('../../utils/auth')
 
 module.exports = {
     Query: {
-        async getChat(_, __, {token}){
+        async getChat(_, {chatId}){
 
             try {
-                const {id} = auth(token)  
-                const chat = await User.findOne({_id: id}).populate('chat').populate({path: 'chat', populate: {path: 'messages', model: 'Message'}}).populate({path: 'chat', populate: {path: 'messages', populate: {path: 'user', model: 'User'}}})
+                  
+                const chat = await Chat.findById(chatId).populate('messages').populate({path: 'messages', populate: 'user'})
 
                 return chat
             } catch (error) {
@@ -38,31 +38,6 @@ module.exports = {
                 pubsub.publish('NEW_MESSAGE', {newMessage})
 
                 return res
-            } catch (error) {
-                throw new Error(error)
-            }
-        },
-        async createChat(_, {partnerId}, {token}){
-
-            try {
-                const {id} = auth(token)
-                const newChat = new Chat({
-                    user: id,
-                    partner: partnerId,
-                    messages: []
-                })
-                const res = await newChat.save()
-
-                //adding the Chat-ID to the User profile
-                await User.findOneAndUpdate({_id: id}, {chat: res._id}).populate('chat')
-                //adding the Chat_ID to the partner's profile
-                await User.findOneAndUpdate({_id: partnerId}, {chat: res._id}).populate('chat')
-                //find and return the chat
-                const chat = await Chat.findOne({_id: res._id})
-                .populate('user')
-                .populate('partner')
-
-                return chat
             } catch (error) {
                 throw new Error(error)
             }

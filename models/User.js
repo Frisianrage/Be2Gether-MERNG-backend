@@ -53,31 +53,12 @@ const userSchema = mongoose.Schema({
             default: ""
         }
     },
-    partner: {
-        user: {
+    connections: [{
             type: mongoose.Schema.Types.ObjectId,
             required: false,
-            ref: 'User',
+            ref: 'Connection',
             default: null
-        },
-        status: {
-            type: String,
-            required: false,
-            default: null
-        }
-    },
-    chat: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: false,
-        ref: 'Chat',
-        default: null
-    },
-    map: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: false,
-        ref: 'Map',
-        default: null
-    }
+    }]
 }, {
     timestamps: true
 })

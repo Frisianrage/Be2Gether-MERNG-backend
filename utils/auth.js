@@ -1,5 +1,4 @@
 const {AuthenticationError} = require('apollo-server')
-
 const jwt = require('jsonwebtoken')
 
 module.exports = (token) => {

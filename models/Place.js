@@ -1,6 +1,11 @@
 const mongoose = require('mongoose')
 
 const placeSchema = mongoose.Schema({
+    mapId: {
+        type: String,
+        required: true,
+        default: ""
+    },
     city: {
         type: String,
         required: false,
