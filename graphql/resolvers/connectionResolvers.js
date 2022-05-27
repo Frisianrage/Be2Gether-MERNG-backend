@@ -78,7 +78,7 @@ module.exports = {
             
             try {
                 const connection = await Connection.findById(connectionId).populate('persons').populate('chat').populate('map')
-                console.log(connection)
+                
                 //deleting all messages
                 connection.chat.messages.forEach(async message => {await Message.findOneAndDelete({_id: message})})
 
