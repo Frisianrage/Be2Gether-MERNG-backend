@@ -51,7 +51,7 @@ module.exports = {
                 
                 //saves the single place in the db and returns place and the user 
                 const res = await newPlace.save()
-                console.log(res)
+             
                 //inserts the new place to the place array inside the map
                 await Map.findOneAndUpdate({_id: mapId},{$push: {places: res._id}})
 

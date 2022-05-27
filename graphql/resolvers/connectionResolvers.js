@@ -2,6 +2,8 @@ const Connection = require('../../models/Connection')
 const User = require('../../models/User')
 const Chat = require('../../models/Chat')
 const Map = require('../../models/Map')
+const Message = require('../../models/Message')
+const Place = require('../../models/Place')
 const auth = require('../../utils/auth')
 
 module.exports = {
@@ -33,15 +35,13 @@ module.exports = {
 
                 const res = await newConnection.save()
 
-                console.log(res)
-
                 //adding the Connection-ID to the User profile
                 await User.findOneAndUpdate({_id: id}, {$push: {connections: res._id}})
                 //adding the Connection_ID to the partner's profile
                 await User.findOneAndUpdate({_id: partnerId}, {$push: {connections: res._id}})
                 //find and return the Connection
                 const connection = await Connection.findOne({_id: res._id}).populate('persons')
-                console.log(connection)
+                
                 return connection
             } catch (error) {
                 throw new Error(error)
@@ -74,16 +74,29 @@ module.exports = {
                 throw new Error(error)
             }
         },
-        async deleteConnection(_,{partnerId}, {token}){
+        async deleteConnection(_,{connectionId}, {token}){
             
             try {
-                const {id} = auth(token)
-                //Update partner profile
-                await User.findOneAndUpdate({_id: partnerId}, {partner: {user: null, status: "", requester: false}, chat: null, map: null })
-                //Update user profile
-                const res = await User.findOneAndUpdate({_id: id}, {partner: {user: null, status: "", requester: false}, chat: null, map: null }).populate('partner').populate({ path: 'partner', populate: 'user' })
-                 
-                return res
+                const connection = await Connection.findById(connectionId).populate('persons').populate('chat').populate('map')
+                console.log(connection)
+                //deleting all messages
+                connection.chat.messages.forEach(async message => {await Message.findOneAndDelete({_id: message})})
+
+                //deleting all places
+                connection.map.places.forEach(async place => {await Place.findOneAndDelete({_id: place})})
+
+                //deleteting the chat
+                await Chat.findOneAndDelete({_id: connection.chat.id})
+
+                //deleting the map
+                await Map.findOneAndDelete({_id: connection.map.id})
+
+                //updating users profiles
+                connection.persons.forEach(async person => {await User.findOneAndUpdate({_id: person.id}, {$pull: {connection: connectionId}})})
+                //deleting the connection
+                await Connection.findOneAndDelete({_id: connectionId})
+                
+                return connection
             } catch (error) {
                 throw new Error(error)
             }

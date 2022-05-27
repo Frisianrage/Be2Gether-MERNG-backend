@@ -22,7 +22,7 @@ module.exports = {
             try {
                 const {id} = auth(token)
                 const user = await User.findOne({_id: id}).populate('connections').populate( { path: 'connections', populate: 'persons' })
-               console.log(user)
+               
                 return user
             } catch (error) {
                 throw new Error(error)

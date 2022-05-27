@@ -13,7 +13,7 @@ module.exports = {
 
                 return chat
             } catch (error) {
-                console.log(error)
+                throw new Error(error)
             }
         }
     },
