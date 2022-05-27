@@ -1,8 +1,6 @@
-//const express = require('express')
-//const http = require('http')
-//const {ApolloServer} = require('apollo-server-express')
 const {ApolloServer, PubSub} = require('apollo-server')
 const dotenv = require('dotenv')
+const cors = require('cors')
 const connectDB = require('./config/db')
 const typeDefs = require('./graphql/typeDefs')
 const resolvers = require('./graphql/resolvers')
@@ -27,6 +25,8 @@ const server = new ApolloServer({
         }
       },
 }) 
+
+server.use(cors())
 
 const PORT = process.env.PORT || 4000
 
