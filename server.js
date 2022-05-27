@@ -12,6 +12,8 @@ const pubsub = new PubSub()
 const server = new ApolloServer({
     typeDefs, 
     resolvers,
+    introspection: true,
+    playground: true,
     cors: {
 		origin: '*',			// <- allow request from all domains
 		credentials: true},
